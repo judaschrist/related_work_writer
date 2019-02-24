@@ -7,6 +7,13 @@
     "scripts": ["background.js"],
     "persistent": false
   },
+  "content_scripts": [
+    {
+      "matches": ["https://scholar.google.com/scholar*"],
+//      "css": ["myStyles.css"],
+      "js": ["selectPaper.js"]
+    }
+  ],
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {
