@@ -15,6 +15,12 @@ for (let i = 0; i < papers.length; i++) {
 function addToLib(paper) {
     let title = paper.getElementsByClassName('gs_rt')[0].textContent;
     let paperId = paper.getAttribute('data-cid');
+    chrome.storage.local.set({paperID: false}, function() {
+    });
+
+    chrome.runtime.sendMessage({paperID: paperId, title: title}, function(response) {
+        console.log(response.farewell);
+    });
 
     addAbstract(paperId);
 }
@@ -22,19 +28,21 @@ function addToLib(paper) {
 function addAbstract(paperId) {
     let xhr = new XMLHttpRequest();
     let url = `https://scholar.google.com/scholar?q=info:${paperId}:scholar.google.com/&output=qabs&scirp=1&hl=en`;
-    xhr.onreadystatechange = readPaperDetail(xhr); // Implemented elsewhere.
+    xhr.onreadystatechange = readPaperDetail(xhr, paperId); // Implemented elsewhere.
     xhr.open("GET", url, true);
     // xhr.setRequestHeader("user-agent", HEADER);
     xhr.send();
 }
 
-function readPaperDetail(xhr) {
+function readPaperDetail(xhr, paperId) {
     return function () {
         if (xhr.readyState === 4) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
             let abstarct = tempDiv.getElementsByClassName("gs_qabs_snippet")[0].textContent;
-            console.log(abstarct)
+            console.log(abstarct);
+            chrome.storage.local.set({"paperId": abstarct}, function() {
+            });
         }
     }
 }
