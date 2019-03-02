@@ -7,7 +7,4 @@ chrome.storage.sync.get('color', function(data) {
 
 changeColor.onclick = function(element) {
     console.log('click!!!');
-    chrome.storage.local.get(null, function(result) {
-        console.log('Value currently is ' + JSON.stringify(result));
-    });
 };
