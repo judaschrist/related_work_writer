@@ -2,38 +2,25 @@ let mainDiv = document.getElementById('main');
 
 chrome.storage.local.get(null, function(result) {
     Object.keys(result).forEach(function(paperId) {
-        console.log(paperId, result[paperId]);
-        let div = document.createElement('div');
-        div.innerHTML = result[paperId]['title'];
-        div.setAttribute('class', 'row');
-        mainDiv.appendChild(div);
+        let htmlStr = `<div class="row" id="div-${paperId}"><h6>${result[paperId]['title']}
+                       </h6><button type="button" class="btn btn-primary btn-sm" 
+                       id="btn-del-${paperId}" value="${paperId}">delete</button>
+                       </div>`;
+        mainDiv.insertAdjacentHTML('beforeend', htmlStr);
+        let btn = document.getElementById('btn-del-' + paperId);
+        btn.addEventListener('click', function () {
+            removeFromLib(paperId);
+        });
     });
-    // for (let i = 0; i < papers.length; i++) {
-    //     let title = papers[i].getElementsByClassName('gs_rt')[0].textContent;
-    //     let otherInfo = {title: title};
-    //     let paperId = papers[i].getAttribute('data-cid');
-    //     let button = null;
-    //     if (result[paperId] === undefined) {
-    //         button = document.createElement('button');
-    //         button.innerHTML = "Add to RW";
-    //         button.setAttribute("id", "btn_" + paperId);
-    //         button.addEventListener('click', onClickAddBtn(paperId, button, otherInfo));
-    //     } else {
-    //         button = document.createElement('button');
-    //         button.innerHTML = "Added";
-    //     }
-    //     let nodesToAdd = papers[i].getElementsByClassName('gs_fl');
-    //     nodesToAdd[nodesToAdd.length-1].appendChild(button);
-    //     // console.log(paperId + "----" + result[paperId]);
-    // }
-
 });
 
-let delBtn = document.getElementById('delete-btn');
+let delBtn = document.getElementById('btn-del-all');
 delBtn.addEventListener('click', removeAll);
 
 function removeFromLib(paperId) {
+    console.log("deleting " + paperId + "...");
     chrome.storage.local.remove(paperId, null);
+    let div = document.getElementById('div-' + paperId).remove();
 }
 
 function removeAll() {
