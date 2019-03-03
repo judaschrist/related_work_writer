@@ -9,7 +9,7 @@ chrome.storage.local.get(null, function(result) {
         mainDiv.insertAdjacentHTML('beforeend', htmlStr);
         let btn = document.getElementById('btn-del-' + paperId);
         btn.addEventListener('click', function () {
-            removeFromLib(paperId);
+            removeFromLib(paperId, result[paperId]);
         });
     });
 });
@@ -17,10 +17,13 @@ chrome.storage.local.get(null, function(result) {
 let delBtn = document.getElementById('btn-del-all');
 delBtn.addEventListener('click', removeAll);
 
-function removeFromLib(paperId) {
+function removeFromLib(paperId, paperInfo) {
     console.log("deleting " + paperId + "...");
     chrome.storage.local.remove(paperId, null);
-    let div = document.getElementById('div-' + paperId).remove();
+    document.getElementById('div-' + paperId).remove();
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {paperId: paperId, info: paperInfo}, null);
+    });
 }
 
 function removeAll() {

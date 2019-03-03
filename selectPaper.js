@@ -7,14 +7,12 @@ chrome.storage.local.get(null, function(result) {
         let title = papers[i].getElementsByClassName('gs_rt')[0].textContent;
         let otherInfo = {title: title};
         let paperId = papers[i].getAttribute('data-cid');
-        let button = null;
+        let button = document.createElement('button');
+        button.setAttribute("id", "btn_" + paperId);
         if (result[paperId] === undefined) {
-            button = document.createElement('button');
             button.innerHTML = "Add to RW";
-            button.setAttribute("id", "btn_" + paperId);
             button.addEventListener('click', onClickAddBtn(paperId, button, otherInfo));
         } else {
-            button = document.createElement('button');
             button.innerHTML = "Added";
         }
         let nodesToAdd = papers[i].getElementsByClassName('gs_fl');
@@ -23,6 +21,14 @@ chrome.storage.local.get(null, function(result) {
     }
 
 });
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        console.log("deleting " + request.paperId);
+        let btn = document.getElementById('btn_' + request.paperId);
+        btn.innerHTML = "Add to RW";
+        btn.addEventListener('click', onClickAddBtn(request.paperId, btn, request.info));
+    });
 
 function onClickAddBtn(paperId, button, otherInfo) {
     return function () {
@@ -53,8 +59,7 @@ function readPaperDetail(xhr, paperId, otherInfo) {
         if (xhr.readyState === 4) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
-            let abstarct = tempDiv.getElementsByClassName("gs_qabs_snippet")[0].textContent;
-            otherInfo['abstract'] = abstarct;
+            otherInfo['abstract'] = tempDiv.getElementsByClassName("gs_qabs_snippet")[0].textContent;
             chrome.storage.local.set({[paperId]: otherInfo}, null);
         }
     }
