@@ -1,4 +1,4 @@
-const HEADER = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Mobile Safari/537.36"
+const HEADER = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Mobile Safari/537.36";
 
 chrome.storage.local.get(null, function(result) {
     let papers = document.body.getElementsByClassName('gs_r gs_or gs_scl');
@@ -8,20 +8,13 @@ chrome.storage.local.get(null, function(result) {
         let paperId = papers[i].getAttribute('data-cid');
         let button = null;
         if (result[paperId] === undefined) {
-            button = document.createElement('a');
+            button = document.createElement('button');
             button.innerHTML = "Add to RW";
-            button.addEventListener('click', function () {
-                addToLib(paperId);
-            });
-        } else if (result[paperId] === null) {
-            button = document.createElement('a');
-            button.innerHTML = "Adding...";
+            button.setAttribute("id", "btn_" + paperId);
+            button.addEventListener('click', onClickAddBtn(paperId, button));
         } else {
-            button = document.createElement('a');
-            button.innerHTML = "Remove from RW";
-            button.addEventListener('click', function () {
-                removeFromLib(paperId);
-            });
+            button = document.createElement('button');
+            button.innerHTML = "Added";
         }
         let nodesToAdd = papers[i].getElementsByClassName('gs_fl');
         nodesToAdd[nodesToAdd.length-1].appendChild(button);
@@ -30,6 +23,14 @@ chrome.storage.local.get(null, function(result) {
 
 });
 
+function onClickAddBtn(paperId, button) {
+    return function () {
+        addToLib(paperId);
+        button.innerHTML = "Added";
+        button.removeEventListener('click', onClickAddBtn);
+    };
+}
+
 
 function removeFromLib(paperId) {
     chrome.storage.local.remove(paperId, null);
@@ -37,13 +38,8 @@ function removeFromLib(paperId) {
 
 function addToLib(paperId) {
     chrome.storage.local.set({[paperId]: null}, function() {
+        addAbstract(paperId);
     });
-
-    // chrome.runtime.sendMessage({paperID: paperId, title: title}, function(response) {
-    //     console.log(response.farewell);
-    // });
-
-    addAbstract(paperId);
     return paperId;
 }
 
@@ -62,9 +58,7 @@ function readPaperDetail(xhr, paperId) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
             let abstarct = tempDiv.getElementsByClassName("gs_qabs_snippet")[0].textContent;
-            console.log(abstarct);
-            chrome.storage.local.set({[paperId]: abstarct}, function() {
-            });
+            chrome.storage.local.set({[paperId]: abstarct}, null);
         }
     }
 }
