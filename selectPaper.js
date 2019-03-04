@@ -26,8 +26,10 @@ chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         console.log("deleting " + request.paperId);
         let btn = document.getElementById('btn_' + request.paperId);
-        btn.innerHTML = "Add to RW";
-        btn.addEventListener('click', onClickAddBtn(request.paperId, btn, request.info));
+        if (btn !== null) {
+            btn.innerHTML = "Add to RW";
+            btn.addEventListener('click', onClickAddBtn(request.paperId, btn, request.info));
+        }
     });
 
 function onClickAddBtn(paperId, button, otherInfo) {
