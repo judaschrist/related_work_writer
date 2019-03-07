@@ -34,35 +34,57 @@ chrome.runtime.onMessage.addListener(
 
 function onClickAddBtn(paperId, button, otherInfo) {
     return function () {
-        addToLib(paperId, otherInfo);
+        chrome.storage.local.set({[paperId]: otherInfo}, function() {
+            addPaperInfo(paperId);
+        });
         button.innerHTML = "Added";
         button.removeEventListener('click', onClickAddBtn);
     };
 }
 
-function addToLib(paperId, otherInfo) {
-    chrome.storage.local.set({[paperId]: null}, function() {
-        addAbstract(paperId, otherInfo);
-    });
-    return paperId;
-}
-
-function addAbstract(paperId, otherInfo) {
+function addAbstract(paperId) {
     let xhr = new XMLHttpRequest();
     let url = `https://scholar.google.com/scholar?q=info:${paperId}:scholar.google.com/&output=qabs&scirp=1&hl=en`;
-    xhr.onreadystatechange = readPaperDetail(xhr, paperId, otherInfo); // Implemented elsewhere.
+    xhr.onreadystatechange = readPaperAbstract(xhr, paperId); // Implemented elsewhere.
     xhr.open("GET", url, true);
-    // xhr.setRequestHeader("user-agent", HEADER);
     xhr.send();
 }
 
-function readPaperDetail(xhr, paperId, otherInfo) {
+function addBibTex(paperId) {
+    let xhr = new XMLHttpRequest();
+    let url = `https://scholar.google.com/scholar?q=info:${paperId}:scholar.google.com/&output=cite&scirp=2&hl=en`;
+    xhr.onreadystatechange = readPaperBibtex(xhr, paperId); // Implemented elsewhere.
+    xhr.open("GET", url, true);
+    xhr.send();
+}
+
+function addPaperInfo(paperId) {
+    addAbstract(paperId);
+    addBibTex(paperId);
+}
+
+function readPaperBibtex(xhr, paperId) {
     return function () {
         if (xhr.readyState === 4) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
-            otherInfo['abstract'] = tempDiv.getElementsByClassName("gs_qabs_snippet")[0].textContent;
-            chrome.storage.local.set({[paperId]: otherInfo}, null);
+            chrome.storage.local.get(paperId, function(info) {
+                info[paperId]['bibtex'] = tempDiv.getElementsByClassName("gs_citi")[0].getAttribute("href");
+                chrome.storage.local.set({[paperId]: info[paperId]}, null);
+            });
+        }
+    }
+}
+
+function readPaperAbstract(xhr, paperId) {
+    return function () {
+        if (xhr.readyState === 4) {
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
+            chrome.storage.local.get(paperId, function(info) {
+                info[paperId]['abstract'] = tempDiv.getElementsByClassName("gs_qabs_snippet")[0].textContent;
+                chrome.storage.local.set({[paperId]: info[paperId]}, null);
+            });
         }
     }
 }
