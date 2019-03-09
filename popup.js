@@ -1,19 +1,26 @@
 let mainDiv = document.getElementById('sub-div');
-
-showPaperList();
-
 let delBtn = document.getElementById('btn-del-all');
 delBtn.addEventListener('click', removeAll);
 let writeBtn = document.getElementById('btn-write');
 writeBtn.addEventListener('click', showResult);
+let backBtn = document.getElementById('btn-back');
+backBtn.addEventListener('click', showPaperList);
+
+
+showPaperList();
 
 
 function showPaperList() {
+    backBtn.style.display = 'none';
+    delBtn.style.display = 'block';
+    writeBtn.style.display = 'block';
+    while (mainDiv.firstChild) {
+        mainDiv.removeChild(mainDiv.firstChild);
+    }
     chrome.storage.local.get(null, function (result) {
         Object.keys(result).forEach(function (paperId) {
             let htmlStr = `<div class="row" id="div-${paperId}"><h6 id="h-${paperId}">${result[paperId]['title']}
                        </h6>
-                       <p>${JSON.stringify(result[paperId], null, 2)}</p>
                        <button type="button" class="btn btn-primary btn-sm" 
                        id="btn-del-${paperId}" value="${paperId}">delete</button>
                        </div>`;
@@ -27,6 +34,9 @@ function showPaperList() {
 }
 
 function showResult() {
+    backBtn.style.display = 'block';
+    delBtn.style.display = 'none';
+    writeBtn.style.display = 'none';
     while (mainDiv.firstChild) {
         mainDiv.removeChild(mainDiv.firstChild);
     }
@@ -34,8 +44,16 @@ function showResult() {
     let bibList = '';
     chrome.storage.local.get(null, function (result) {
         Object.keys(result).forEach(function (paperId) {
-
+            let bibtexStr = result[paperId]['bibtex'];
+            let firstAuthorStart = bibtexStr.indexOf('author={') + 8;
+            let firstAuthorEnd = bibtexStr.indexOf(',', firstAuthorStart);
+            let fa = bibtexStr.substring(firstAuthorStart, firstAuthorEnd);
+            let bibId = bibtexStr.substring(bibtexStr.indexOf('{'), bibtexStr.indexOf(','));
+            rwList += `${fa} et al.\\cite{${bibId}} propose...<br><br>`;
+            bibList += bibtexStr + '<br><br>';
         });
+        let htmlStr = `<p>${rwList}</p><p>${bibList}</p>`;
+        mainDiv.insertAdjacentHTML('beforeend', htmlStr);
     });
 }
 
