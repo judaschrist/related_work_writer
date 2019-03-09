@@ -1,24 +1,43 @@
-let mainDiv = document.getElementById('main');
+let mainDiv = document.getElementById('sub-div');
 
-chrome.storage.local.get(null, function(result) {
-    Object.keys(result).forEach(function(paperId) {
-        let htmlStr = `<div class="row" id="div-${paperId}"><h6 id="h-${paperId}">${result[paperId]['title']}
+showPaperList();
+
+let delBtn = document.getElementById('btn-del-all');
+delBtn.addEventListener('click', removeAll);
+let writeBtn = document.getElementById('btn-write');
+writeBtn.addEventListener('click', showResult);
+
+
+function showPaperList() {
+    chrome.storage.local.get(null, function (result) {
+        Object.keys(result).forEach(function (paperId) {
+            let htmlStr = `<div class="row" id="div-${paperId}"><h6 id="h-${paperId}">${result[paperId]['title']}
                        </h6>
                        <p>${JSON.stringify(result[paperId], null, 2)}</p>
                        <button type="button" class="btn btn-primary btn-sm" 
                        id="btn-del-${paperId}" value="${paperId}">delete</button>
                        </div>`;
-        mainDiv.insertAdjacentHTML('beforeend', htmlStr);
-        let btn = document.getElementById('btn-del-' + paperId);
-        btn.addEventListener('click', function () {
-            removeFromLib(paperId, result[paperId]);
+            mainDiv.insertAdjacentHTML('beforeend', htmlStr);
+            let btn = document.getElementById('btn-del-' + paperId);
+            btn.addEventListener('click', function () {
+                removeFromLib(paperId, result[paperId]);
+            });
         });
-        let title = document.getElementById('h-' + paperId);
     });
-});
+}
 
-let delBtn = document.getElementById('btn-del-all');
-delBtn.addEventListener('click', removeAll);
+function showResult() {
+    while (mainDiv.firstChild) {
+        mainDiv.removeChild(mainDiv.firstChild);
+    }
+    let rwList = '';
+    let bibList = '';
+    chrome.storage.local.get(null, function (result) {
+        Object.keys(result).forEach(function (paperId) {
+
+        });
+    });
+}
 
 function removeFromLib(paperId, paperInfo) {
     console.log("deleting " + paperId + "...");

@@ -68,10 +68,18 @@ function readPaperBibtex(xhr, paperId) {
         if (xhr.readyState === 4) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
-            chrome.storage.local.get(paperId, function(info) {
-                info[paperId]['bibtex'] = tempDiv.getElementsByClassName("gs_citi")[0].getAttribute("href");
-                chrome.storage.local.set({[paperId]: info[paperId]}, null);
-            });
+            let xhrbib = new XMLHttpRequest();
+            let url = tempDiv.getElementsByClassName("gs_citi")[0].getAttribute("href");
+            xhrbib.onreadystatechange = function () {
+                if (xhrbib.readyState === 4) {
+                    chrome.storage.local.get(paperId, function(info) {
+                        info[paperId]['bibtex'] = xhrbib.responseText;
+                        chrome.storage.local.set({[paperId]: info[paperId]}, null);
+                    });
+                }
+            };
+            xhrbib.open("GET", url, true);
+            xhrbib.send();
         }
     }
 }
