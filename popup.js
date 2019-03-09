@@ -48,8 +48,8 @@ function showResult() {
             let firstAuthorStart = bibtexStr.indexOf('author={') + 8;
             let firstAuthorEnd = bibtexStr.indexOf(',', firstAuthorStart);
             let fa = bibtexStr.substring(firstAuthorStart, firstAuthorEnd);
-            let bibId = bibtexStr.substring(bibtexStr.indexOf('{'), bibtexStr.indexOf(','));
-            rwList += `${fa} et al.\\cite{${bibId}} propose...<br><br>`;
+            let bibId = bibtexStr.substring(bibtexStr.indexOf('{')+1, bibtexStr.indexOf(','));
+            rwList += `${fa} et al.~\\cite{${bibId}} propose...<br><br>`;
             bibList += bibtexStr + '<br><br>';
         });
         let htmlStr = `<p>${rwList}</p><p>${bibList}</p>`;
