@@ -33,6 +33,17 @@ function showPaperList() {
     });
 }
 
+function copyStringToClipboard (str) {
+    let el = document.createElement('textarea');
+    el.value = str;
+    el.setAttribute('readonly', '');
+    el.style = {position: 'absolute', left: '-9999px'};
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+}
+
 function showResult() {
     backBtn.style.display = 'block';
     delBtn.style.display = 'none';
@@ -49,11 +60,22 @@ function showResult() {
             let firstAuthorEnd = bibtexStr.indexOf(',', firstAuthorStart);
             let fa = bibtexStr.substring(firstAuthorStart, firstAuthorEnd);
             let bibId = bibtexStr.substring(bibtexStr.indexOf('{')+1, bibtexStr.indexOf(','));
-            rwList += `${fa} et al.~\\cite{${bibId}} propose...<br><br>`;
-            bibList += bibtexStr + '<br><br>';
+            rwList += `${fa} et al.~\\cite{${bibId}} propose...<br>`;
+            bibList += bibtexStr.replace(/\n/g, '<br>') + '<br>';
         });
-        let htmlStr = `<p>${rwList}</p><p>${bibList}</p>`;
+        let htmlStr = `<p>${rwList}</p>
+                       <button type="button" class="btn btn-primary btn-sm" 
+                       id="btn-copy-text">Copy text</button>
+                       <p>${bibList}</p>
+                       <button type="button" class="btn btn-primary btn-sm"
+                       id="btn-copy-bib">Copy bibtex</button>`;
         mainDiv.insertAdjacentHTML('beforeend', htmlStr);
+        document.getElementById('btn-copy-text').addEventListener('click', function () {
+            copyStringToClipboard(rwList.replace(/<br>/g, '\n'));
+        });
+        document.getElementById('btn-copy-bib').addEventListener('click', function () {
+            copyStringToClipboard(bibList.replace(/<br>/g, '\n'));
+        });
     });
 }
 
