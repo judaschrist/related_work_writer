@@ -60,13 +60,12 @@ function showResult() {
             let firstAuthorEnd = bibtexStr.indexOf(',', firstAuthorStart);
             let fa = bibtexStr.substring(firstAuthorStart, firstAuthorEnd);
             let bibId = bibtexStr.substring(bibtexStr.indexOf('{')+1, bibtexStr.indexOf(','));
-            rwList += `${fa} et al.~\\cite{${bibId}} propose...<br>`;
+            rwList += genRWTex(fa, result[paperId]['title'], result[paperId]['abstract'], bibId) + '<br>';
             bibList += bibtexStr.replace(/\n/g, '<br>') + '<br>';
         });
         let htmlStr = `<p>${rwList}</p>
                        <button type="button" class="btn btn-primary btn-sm" 
                        id="btn-copy-text">Copy text</button>
-                       <p>${bibList}</p>
                        <button type="button" class="btn btn-primary btn-sm"
                        id="btn-copy-bib">Copy bibtex</button>`;
         mainDiv.insertAdjacentHTML('beforeend', htmlStr);
