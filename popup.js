@@ -1,4 +1,4 @@
-let mainDiv = document.getElementById('sub-div');
+let pListDiv = document.getElementById('sub-div');
 let delBtn = document.getElementById('btn-del-all');
 delBtn.addEventListener('click', removeAll);
 let writeBtn = document.getElementById('btn-write');
@@ -14,17 +14,19 @@ function showPaperList() {
     backBtn.style.display = 'none';
     delBtn.style.display = 'block';
     writeBtn.style.display = 'block';
-    while (mainDiv.firstChild) {
-        mainDiv.removeChild(mainDiv.firstChild);
+    while (pListDiv.firstChild) {
+        pListDiv.removeChild(pListDiv.firstChild);
     }
     chrome.storage.local.get(null, function (result) {
         Object.keys(result).forEach(function (paperId) {
-            let htmlStr = `<div class="row" id="div-${paperId}"><h6 id="h-${paperId}">${result[paperId]['title']}
-                       </h6>
+            let htmlStr = `<li class="list-group-item" id="div-${paperId}">
+                       <h6 id="h-${paperId}">${result[paperId]['title']}</h6>
+                       <div  class="d-flex w-100 justify-content-between">
+                       <small>${result[paperId]['author']}</small>
                        <button type="button" class="btn btn-primary btn-sm" 
                        id="btn-del-${paperId}" value="${paperId}">delete</button>
-                       </div>`;
-            mainDiv.insertAdjacentHTML('beforeend', htmlStr);
+                       </div></li>`;
+            pListDiv.insertAdjacentHTML('beforeend', htmlStr);
             let btn = document.getElementById('btn-del-' + paperId);
             btn.addEventListener('click', function () {
                 removeFromLib(paperId, result[paperId]);
@@ -48,8 +50,8 @@ function showResult() {
     backBtn.style.display = 'block';
     delBtn.style.display = 'none';
     writeBtn.style.display = 'none';
-    while (mainDiv.firstChild) {
-        mainDiv.removeChild(mainDiv.firstChild);
+    while (pListDiv.firstChild) {
+        pListDiv.removeChild(pListDiv.firstChild);
     }
     let rwList = '';
     let bibList = '';
@@ -68,7 +70,7 @@ function showResult() {
                        id="btn-copy-text">Copy text</button>
                        <button type="button" class="btn btn-primary btn-sm"
                        id="btn-copy-bib">Copy bibtex</button>`;
-        mainDiv.insertAdjacentHTML('beforeend', htmlStr);
+        pListDiv.insertAdjacentHTML('beforeend', htmlStr);
         document.getElementById('btn-copy-text').addEventListener('click', function () {
             copyStringToClipboard(rwList.replace(/<br>/g, '\n'));
         });

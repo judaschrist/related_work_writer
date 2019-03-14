@@ -4,7 +4,7 @@ function genRWTex(author, title, abstract, bibId) {
     let sen = CORE_REG.exec(abstract);
 
     if (sen === null) {
-        sen = "Not FIND!!!" + abstract;
+        sen = "[TO BE COMPLETED]";
     } else {
         sen = sen[2];
     }

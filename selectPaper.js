@@ -74,6 +74,10 @@ function readPaperBibtex(xhr, paperId) {
                 if (xhrbib.readyState === 4) {
                     chrome.storage.local.get(paperId, function(info) {
                         info[paperId]['bibtex'] = xhrbib.responseText;
+                        let bibtexStr = info[paperId]['bibtex'];
+                        let firstAuthorStart = bibtexStr.indexOf('author={') + 8;
+                        let firstAuthorEnd = bibtexStr.indexOf(' and', firstAuthorStart);
+                        info[paperId]['author'] = bibtexStr.substring(firstAuthorStart, firstAuthorEnd);
                         chrome.storage.local.set({[paperId]: info[paperId]}, null);
                     });
                 }
