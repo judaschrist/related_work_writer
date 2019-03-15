@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var links = document.getElementsByTagName("a");
-    for (var i = 0; i < links.length; i++) {
+    let links = document.getElementsByTagName("a");
+    for (let i = 0; i < links.length; i++) {
         (function () {
-            var ln = links[i];
-            var location = ln.href;
+            let ln = links[i];
+            let location = ln.href;
             ln.onclick = function () {
                 chrome.tabs.create({active: true, url: location});
             };
@@ -94,12 +94,14 @@ function showResult() {
             let bibList = '';
             Object.keys(result).forEach(function (paperId) {
                 let bibtexStr = result[paperId]['bibtex'];
-                let firstAuthorStart = bibtexStr.indexOf('author={') + 8;
-                let firstAuthorEnd = bibtexStr.indexOf(',', firstAuthorStart);
-                let fa = bibtexStr.substring(firstAuthorStart, firstAuthorEnd);
-                let bibId = bibtexStr.substring(bibtexStr.indexOf('{') + 1, bibtexStr.indexOf(','));
-                rwList.push(genRWTex(fa, result[paperId]['title'], result[paperId]['abstract'], bibId));
-                bibList += bibtexStr + '\n';
+                if (bibtexStr !== undefined) {
+                    let firstAuthorStart = bibtexStr.indexOf('author={') + 8;
+                    let firstAuthorEnd = bibtexStr.indexOf(',', firstAuthorStart);
+                    let fa = bibtexStr.substring(firstAuthorStart, firstAuthorEnd);
+                    let bibId = bibtexStr.substring(bibtexStr.indexOf('{') + 1, bibtexStr.indexOf(','));
+                    rwList.push(genRWTex(fa, result[paperId]['title'], result[paperId]['abstract'], bibId));
+                    bibList += bibtexStr + '\n';
+                }
             });
             let htmlStr = '';
             rwList.forEach(function (txt) {
@@ -152,9 +154,7 @@ function removeAll() {
     });
     showWelcome();
 }
-
-removeAll();
-
+// removeAll();
 /**
  * RW example:
  *

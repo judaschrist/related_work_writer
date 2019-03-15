@@ -58,7 +58,8 @@ function addBibTex(paperId) {
 
 function addPaperInfo(paperId) {
     addAbstract(paperId);
-    addBibTex(paperId);
+    setTimeout(function(){ addBibTex(paperId); }, 700);
+
 }
 
 function readPaperBibtex(xhr, paperId) {
@@ -69,7 +70,7 @@ function readPaperBibtex(xhr, paperId) {
             let xhrbib = new XMLHttpRequest();
             let url = tempDiv.getElementsByClassName("gs_citi")[0].getAttribute("href");
             xhrbib.onreadystatechange = function () {
-                if (xhrbib.readyState === 4) {
+                if (xhrbib.readyState === 4 && xhrbib.status === 200) {
                     chrome.storage.local.get(paperId, function(info) {
                         info[paperId]['bibtex'] = xhrbib.responseText;
                         let bibtexStr = info[paperId]['bibtex'];
@@ -81,14 +82,14 @@ function readPaperBibtex(xhr, paperId) {
                 }
             };
             xhrbib.open("GET", url, true);
-            xhrbib.send();
+            setTimeout(function(){ xhrbib.send(); }, 500);
         }
     }
 }
 
 function readPaperAbstract(xhr, paperId) {
     return function () {
-        if (xhr.readyState === 4) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
             chrome.storage.local.get(paperId, function(info) {
