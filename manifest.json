@@ -6,7 +6,8 @@
     "activeTab",
     "declarativeContent",
     "storage",
-    "https://scholar.googleusercontent.com/"
+    "https://scholar.googleusercontent.com/",
+    "tabs"
   ],
   "background": {
     "scripts": ["background.js"],

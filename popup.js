@@ -1,3 +1,17 @@
+document.addEventListener('DOMContentLoaded', function () {
+    var links = document.getElementsByTagName("a");
+    for (var i = 0; i < links.length; i++) {
+        (function () {
+            var ln = links[i];
+            var location = ln.href;
+            ln.onclick = function () {
+                chrome.tabs.create({active: true, url: location});
+            };
+        })();
+    }
+});
+
+
 let pListDiv = document.getElementById('sub-div');
 let delBtn = document.getElementById('btn-del-all');
 delBtn.addEventListener('click', removeAll);
@@ -17,7 +31,7 @@ function showWelcome() {
                 <p class="lead">Hi, fellow researchers!</p>
                 <p class="lead">Ready to add related work to your paper?</p>
                 <hr class="my-4">
-                <p>Go to <a href="https://https://scholar.google.com">Google Scholar</a> to add papers.</p>
+                <p>Go to <a href="https://scholar.google.com">Google Scholar</a> to add papers.</p>
                 <a class="btn btn-primary btn-sm" href="https://github.com/judaschrist/related_work_writer" role="button">Learn more</a>
             </div>
         </li>`;
@@ -119,10 +133,11 @@ function removeFromLib(paperId, paperInfo) {
         chrome.storage.local.get(null, function (result) {
             if (Object.keys(result).length === 0) {
                 showWelcome();
+            } else {
+                document.getElementById('div-' + paperId).remove();
             }
         });
     });
-    document.getElementById('div-' + paperId).remove();
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {paperId: paperId, info: paperInfo}, null);
     });
@@ -130,6 +145,7 @@ function removeFromLib(paperId, paperInfo) {
 
 function removeAll() {
     chrome.storage.local.get(null, function (result) {
+        console.log(result);
         Object.keys(result).forEach(function (paperId) {
             removeFromLib(paperId, result[paperId]);
         });
