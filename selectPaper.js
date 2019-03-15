@@ -92,8 +92,11 @@ function readPaperAbstract(xhr, paperId) {
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = xhr.responseText.replace(/<script(.|\s)*?\/script>/g, '');
             chrome.storage.local.get(paperId, function(info) {
-                info[paperId]['abstract'] = tempDiv.getElementsByClassName("gs_qabs_snippet")[0].textContent;
-                chrome.storage.local.set({[paperId]: info[paperId]}, null);
+                let absList = tempDiv.getElementsByClassName("gs_qabs_snippet");
+                if (absList.length > 0) {
+                    info[paperId]['abstract'] = [0].textContent;
+                    chrome.storage.local.set({[paperId]: info[paperId]}, null);
+                }
             });
         }
     }

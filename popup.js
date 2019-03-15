@@ -153,6 +153,8 @@ function removeAll() {
     showWelcome();
 }
 
+removeAll();
+
 /**
  * RW example:
  *
