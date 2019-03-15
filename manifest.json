@@ -1,6 +1,6 @@
 {
   "name": "Related Work Writer",
-  "version": "0.1",
+  "version": "0.0.1",
   "description": "Automatically generate related work from Google Scholar links",
   "permissions": [
     "activeTab",
