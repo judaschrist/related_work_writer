@@ -1,5 +1,3 @@
-const HEADER = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Mobile Safari/537.36";
-
 chrome.storage.local.get(null, function(result) {
     let papers = document.body.getElementsByClassName('gs_r gs_or gs_scl');
     console.log(papers.length + ' papers on the page');
