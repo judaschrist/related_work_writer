@@ -8,14 +8,19 @@ writeBtn.addEventListener('click', showResult);
 showPaperList();
 
 function showWelcome() {
+    while (pListDiv.firstChild) {
+        pListDiv.removeChild(pListDiv.firstChild);
+    }
     let htmlStr = `
+        <li class="list-group-item">
             <div class="jumbotron">
                 <p class="lead">Hi, fellow researchers!</p>
                 <p class="lead">Ready to add related work to your paper?</p>
                 <hr class="my-4">
                 <p>Go to <a href="https://https://scholar.google.com">Google Scholar</a> to add papers.</p>
                 <a class="btn btn-primary btn-sm" href="https://github.com/judaschrist/related_work_writer" role="button">Learn more</a>
-            </div>`;
+            </div>
+        </li>`;
     pListDiv.insertAdjacentHTML('beforeend', htmlStr);
 }
 
@@ -110,7 +115,13 @@ function showResult() {
 
 function removeFromLib(paperId, paperInfo) {
     console.log("deleting " + paperId + "...");
-    chrome.storage.local.remove(paperId, null);
+    chrome.storage.local.remove(paperId, function () {
+        chrome.storage.local.get(null, function (result) {
+            if (Object.keys(result).length === 0) {
+                showWelcome();
+            }
+        });
+    });
     document.getElementById('div-' + paperId).remove();
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {paperId: paperId, info: paperInfo}, null);
