@@ -36,6 +36,7 @@ function showWelcome() {
             </div>
         </li>`;
     pListDiv.insertAdjacentHTML('beforeend', htmlStr);
+    writeBtn.setAttribute('disabled', 'true');
 }
 
 function showPaperList() {
@@ -49,10 +50,17 @@ function showPaperList() {
     chrome.storage.local.get(null, function (result) {
         if (Object.keys(result).length > 0) {
             Object.keys(result).forEach(function (paperId) {
+                let authorElm = result[paperId]['author'];
+                if (result[paperId]['author'] === undefined) {
+                    authorElm = '<div class="spinner-border spinner-border-sm" role="status">' +
+                        '<span class="sr-only">Loading...</span>' +
+                        '</div>';
+                    writeBtn.setAttribute('disabled', 'true');
+                }
                 let htmlStr = `<li class="list-group-item" id="div-${paperId}">
                        <p id="h-${paperId}">${result[paperId]['title']}</p>
                        <div  class="d-flex w-100 justify-content-between">
-                       <small>${result[paperId]['author']}</small>
+                       <small>${authorElm}</small>
                        <button type="button" class="btn btn-light btn-sm" 
                        id="btn-del-${paperId}" value="${paperId}"><span class="oi oi-trash"></span></button>
                        </div></li>`;
