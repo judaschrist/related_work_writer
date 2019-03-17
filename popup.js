@@ -93,6 +93,7 @@ function showResult() {
             let rwList = [];
             let bibList = '';
             Object.keys(result).forEach(function (paperId) {
+                console.log(result[paperId]);
                 let bibtexStr = result[paperId]['bibtex'];
                 if (bibtexStr !== undefined) {
                     let firstAuthorStart = bibtexStr.indexOf('author={') + 8;

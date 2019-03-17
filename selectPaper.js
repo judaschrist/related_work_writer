@@ -95,7 +95,7 @@ function readPaperAbstract(xhr, paperId) {
             chrome.storage.local.get(paperId, function(info) {
                 let absList = tempDiv.getElementsByClassName("gs_qabs_snippet");
                 if (absList.length > 0) {
-                    info[paperId]['abstract'] = [0].textContent;
+                    info[paperId]['abstract'] = absList[0].textContent;
                     chrome.storage.local.set({[paperId]: info[paperId]}, null);
                 }
             });
