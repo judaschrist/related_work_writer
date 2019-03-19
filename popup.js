@@ -21,6 +21,16 @@ writeBtn.addEventListener('click', showResult);
 
 showPaperList();
 
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    Object.keys(changes).forEach(function (paperId) {
+        console.log(changes[paperId]);
+        if (changes[paperId].newValue['author'] !== undefined && changes[paperId].newValue['abstract'] !== undefined) {
+            document.getElementById("author-" + paperId).innerHTML = changes[paperId].newValue['author'];
+            writeBtn.disabled = false;
+        }
+    });
+});
+
 function showWelcome() {
     while (pListDiv.firstChild) {
         pListDiv.removeChild(pListDiv.firstChild);
@@ -36,7 +46,7 @@ function showWelcome() {
             </div>
         </li>`;
     pListDiv.insertAdjacentHTML('beforeend', htmlStr);
-    writeBtn.setAttribute('disabled', 'true');
+    writeBtn.disabled = true;
 }
 
 function showPaperList() {
@@ -51,16 +61,16 @@ function showPaperList() {
         if (Object.keys(result).length > 0) {
             Object.keys(result).forEach(function (paperId) {
                 let authorElm = result[paperId]['author'];
-                if (result[paperId]['author'] === undefined) {
+                if (result[paperId]['author'] === undefined || result[paperId]['abstract'] === undefined) {
                     authorElm = '<div class="spinner-border spinner-border-sm" role="status">' +
                         '<span class="sr-only">Loading...</span>' +
                         '</div>';
-                    writeBtn.setAttribute('disabled', 'true');
+                    writeBtn.disabled = true;
                 }
                 let htmlStr = `<li class="list-group-item" id="div-${paperId}">
                        <p id="h-${paperId}">${result[paperId]['title']}</p>
                        <div  class="d-flex w-100 justify-content-between">
-                       <small>${authorElm}</small>
+                       <small id="author-${paperId}">${authorElm}</small>
                        <button type="button" class="btn btn-light btn-sm" 
                        id="btn-del-${paperId}" value="${paperId}"><span class="oi oi-trash"></span></button>
                        </div></li>`;
@@ -164,20 +174,5 @@ function removeAll() {
     showWelcome();
 }
 // removeAll();
-/**
- * RW example:
- *
- * Valko et al.\cite{valko2011conditional} propose to use a classification model on the features
- * and the corresponding class label of an instance to find incorrectly assigned labels.
- *
- * @inproceedings{valko2011conditional,
-	title={Conditional anomaly detection with soft harmonic functions},
-	author={Valko, Michal and Kveton, Branislav and Valizadegan, Hamed and Cooper, Gregory F and Hauskrecht, Milos},
-	booktitle={Data Mining (ICDM), 2011 IEEE 11th International Conference on},
-	pages={735--743},
-	year={2011},
-	organization={IEEE}
-}
- *
- */
+
 
