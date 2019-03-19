@@ -23,8 +23,7 @@ showPaperList();
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     Object.keys(changes).forEach(function (paperId) {
-        console.log(changes[paperId]);
-        if (changes[paperId].newValue['author'] !== undefined && changes[paperId].newValue['abstract'] !== undefined) {
+        if (changes[paperId].newValue !== undefined && changes[paperId].newValue['author'] !== undefined && changes[paperId].newValue['abstract'] !== undefined) {
             document.getElementById("author-" + paperId).innerHTML = changes[paperId].newValue['author'];
             writeBtn.disabled = false;
         }
